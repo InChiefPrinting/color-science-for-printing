@@ -10,6 +10,7 @@ Reads:
 
 import struct
 from src.icc.profile_model import ICCProfile
+from src.icc.tag_types import parse_xyz_type
 
 
 def read_ascii(data):
@@ -46,7 +47,11 @@ def parse_tag_table(f, profile):
         f.seek(offset)
         data = f.read(size)
 
-        profile.add_tag(signature, data)
+        if signature in ["rXYZ", "gXYZ", "bXYZ", "wtpt"]:
+          parsed = parse_xyz_type(data)
+          profile.add_tag(signature, parsed)
+        else:
+          profile.add_tag(signature, data)
 
         f.seek(current_pos)
 
